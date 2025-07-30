@@ -16,7 +16,11 @@
         "build": "tsc",
         "prepublishOnly": "npm run build",
         "start": "node dist/index.js",
-        "inspector": "npx @modelcontextprotocol/inspector node dist/index.js"
+        "inspector": "npx @modelcontextprotocol/inspector node dist/index.js",
+        "test:auth": "node --loader ts-node/esm src/test-auth.ts",
+        "test:manual": "node --loader ts-node/esm src/test-manual.ts",
+        "test:trading": "node --loader ts-node/esm src/test-trading.ts",
+        "test": "npm run test:auth && npm run test:manual"
     },
     "keywords": [
         "cryptocurrency",

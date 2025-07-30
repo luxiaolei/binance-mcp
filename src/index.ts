@@ -4,6 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from "zod";
 import axios from "axios";
+import { registerTradingTools } from "./tools/trading.js";
 
 const BASE_URL = "https://api.binance.com";
 
@@ -415,10 +416,11 @@ async function main() {
     const server = new McpServer({
         name: "binance-mcp",
         version: "1.0.0",
-        description: "Binance Cryptocurrency Market Data MCP Service"
+        description: "Binance Cryptocurrency Market Data & Trading MCP Service"
     });
 
     registerTools(server);
+    registerTradingTools(server);
     let transport = new StdioServerTransport();
     await server.connect(transport);
     const cleanup = async () => {
