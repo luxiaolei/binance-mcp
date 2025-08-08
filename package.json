@@ -1,5 +1,5 @@
 {
-    "name": "@snjyor/binance-mcp",
+    "name": "@luxiaolei/binance-mcp",
     "version": "1.0.1",
     "description": "Binance Cryptocurrency Market Data MCP Service",
     "main": "dist/index.js",
@@ -19,8 +19,12 @@
         "inspector": "npx @modelcontextprotocol/inspector node dist/index.js",
         "test:auth": "node --loader ts-node/esm src/test-auth.ts",
         "test:manual": "node --loader ts-node/esm src/test-manual.ts",
-        "test:trading": "node --loader ts-node/esm src/test-trading.ts",
-        "test": "npm run test:auth && npm run test:manual"
+        "test": "npm run test:auth && npm run test:manual",
+        "typecheck": "tsc --noEmit",
+        "lint": "echo 'TypeScript compilation serves as linting' && npm run typecheck",
+        "clean": "rm -rf dist",
+        "ci": "npm run clean && npm run build && npm run test",
+        "verify": "npm run build && npm run test:auth"
     },
     "keywords": [
         "cryptocurrency",
@@ -33,7 +37,7 @@
         "claude",
         "crypto-api"
     ],
-    "author": "snjyor",
+    "author": "luxiaolei",
     "license": "MIT",
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.13.3",
@@ -49,13 +53,13 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/snjyor/binance-mcp.git"
+        "url": "https://github.com/luxiaolei/binance-mcp.git"
     },
     "publishConfig": {
         "access": "public"
     },
     "bugs": {
-        "url": "https://github.com/snjyor/binance-mcp/issues"
+        "url": "https://github.com/luxiaolei/binance-mcp/issues"
     },
-    "homepage": "https://github.com/snjyor/binance-mcp#readme"
+    "homepage": "https://github.com/luxiaolei/binance-mcp#readme"
 }

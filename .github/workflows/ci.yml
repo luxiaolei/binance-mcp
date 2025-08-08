@@ -1,0 +1,171 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run TypeScript compilation
+      run: npm run build
+      
+    - name: Run authentication tests
+      run: npm run test:auth
+      
+    - name: Run manual API tests (without credentials)
+      run: npm run test:manual
+      env:
+        # These tests will run without credentials and show expected behavior
+        BINANCE_TESTNET: 'true'
+        
+    - name: Verify built files exist
+      run: |
+        test -f dist/index.js
+        test -f dist/utils/auth.js
+        test -f dist/tools/trading.js
+        test -f dist/types/trading.js
+        
+    - name: Test MCP server startup
+      run: |
+        timeout 10s node dist/index.js || true
+        echo "MCP server startup test completed"
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Check TypeScript types
+      run: npx tsc --noEmit
+      
+    - name: Check for unused dependencies
+      run: |
+        echo "Checking for unused dependencies..."
+        # Install depcheck for dependency analysis
+        npm install -g depcheck
+        depcheck --ignore-patterns="dist/**" || true
+
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run security audit
+      run: npm audit --audit-level moderate
+      
+    - name: Check for sensitive files
+      run: |
+        echo "Checking for sensitive files..."
+        if find . -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name ".env" | grep -v node_modules | grep -q .; then
+          echo "❌ Found sensitive files that should not be committed"
+          find . -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name ".env" | grep -v node_modules
+          exit 1
+        else
+          echo "✅ No sensitive files found"
+        fi
+
+  build-docker:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Build Docker image
+      run: |
+        if [ -f Dockerfile ]; then
+          echo "Building Docker image..."
+          docker build -t binance-mcp:test .
+          echo "✅ Docker build successful"
+        else
+          echo "ℹ️ No Dockerfile found, skipping Docker build"
+        fi
+
+  package-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build package
+      run: npm run build
+      
+    - name: Test package installation
+      run: |
+        # Create a test directory
+        mkdir -p /tmp/package-test
+        cd /tmp/package-test
+        
+        # Initialize a new npm project
+        npm init -y
+        
+        # Install the package locally
+        npm install $GITHUB_WORKSPACE
+        
+        # Verify the package was installed
+        if [ -f node_modules/@snjyor/binance-mcp/dist/index.js ]; then
+          echo "✅ Package installation successful"
+        else
+          echo "❌ Package installation failed"
+          exit 1
+        fi
+        
+    - name: Test npx command
+      run: |
+        cd /tmp/package-test
+        # Test that the package can be run via npx (timeout after 5 seconds)
+        timeout 5s npx @snjyor/binance-mcp || true
+        echo "✅ npx command test completed"

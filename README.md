@@ -86,7 +86,7 @@ To use trading features, you need to configure your Binance API credentials:
   "mcpServers": {
     "binance": {
       "command": "npx",
-      "args": ["-y", "@snjyor/binance-mcp@latest"],
+      "args": ["-y", "@luxiaolei/binance-mcp@latest"],
       "env": {
         "BINANCE_API_KEY": "your-api-key-here",
         "BINANCE_SECRET_KEY": "your-secret-key-here",
@@ -102,6 +102,21 @@ To use trading features, you need to configure your Binance API credentials:
 - Use API restrictions on Binance (IP whitelist, trading permissions only)
 - Consider using testnet for testing (set `BINANCE_TESTNET: "true"`)
 
+## Quick Setup for Claude Code
+
+**One-Line Command Setup:**
+```bash
+claude mcp add binance --scope user --command npx --args "-y,@luxiaolei/binance-mcp@latest"
+```
+
+Then set your API keys (optional, for trading features):
+```bash
+# For trading features, add your API credentials:
+claude mcp config binance --env BINANCE_API_KEY=your-api-key-here BINANCE_SECRET_KEY=your-secret-key-here BINANCE_TESTNET=false
+```
+
+After setup, restart Claude Code and the Binance tools will be available.
+
 ## Using in Cursor
 
 **Global Installation**
@@ -109,7 +124,7 @@ To use trading features, you need to configure your Binance API credentials:
 Use npx to run the MCP service:
 
 ```bash
-npx -y @snjyor/binance-mcp@latest
+npx -y @luxiaolei/binance-mcp@latest
 ```
 
 In Cursor IDE:
@@ -119,7 +134,7 @@ In Cursor IDE:
 3. Fill in the form:
    - Name: `binance`
    - Type: `command`
-   - Command: `npx -y @snjyor/binance-mcp@latest`
+   - Command: `npx -y @luxiaolei/binance-mcp@latest`
 4. Add environment variables for trading (optional):
    - BINANCE_API_KEY
    - BINANCE_SECRET_KEY
@@ -136,7 +151,7 @@ Add a `.cursor/mcp.json` file to your project:
       "command": "npx",
       "args": [
         "-y",
-        "@snjyor/binance-mcp@latest"
+        "@luxiaolei/binance-mcp@latest"
       ],
       "env": {
         "BINANCE_API_KEY": "your-api-key-here",
