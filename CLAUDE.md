@@ -123,11 +123,10 @@ claude mcp config binance --env BINANCE_API_KEY=your-api-key BINANCE_SECRET_KEY=
 - Support testnet for safe development
 
 ### Official Documentation
-The `binance-spot-api-docs/` directory contains complete Binance API documentation including:
-- `rest-api.md` - Complete API endpoint documentation
-- `enums.md` - Valid values for order types, sides, etc.
-- `errors.md` - Error codes and messages
-- `testnet/` - Testnet-specific documentation
+For complete Binance API documentation, refer to:
+- [Binance Spot API Documentation](https://binance-docs.github.io/apidocs/spot/en/) - Complete API endpoint documentation
+- [API Error Codes](https://binance-docs.github.io/apidocs/spot/en/#error-codes) - Error codes and messages  
+- [Testnet Documentation](https://testnet.binance.vision/) - Testnet-specific documentation
 
 ## Testing Strategy
 
