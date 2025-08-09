@@ -9,6 +9,8 @@ This is a Model Context Protocol (MCP) server that provides AI agents access to 
 1. **Public Market Data Tools** - No authentication required (prices, order books, candlestick data, etc.)
 2. **Authenticated Trading Tools** - Requires Binance API credentials (account info, placing/canceling orders, trade history)
 
+Published as `@luxiaolei/binance-mcp` on npm registry.
+
 ## Development Commands
 
 ### Build and Run
@@ -16,6 +18,7 @@ This is a Model Context Protocol (MCP) server that provides AI agents access to 
 npm run build          # Compile TypeScript to dist/
 npm run start          # Run compiled server
 npm run dev            # Run directly from TypeScript source
+npm run demo           # Run demo script (if available)
 npm run inspector      # Launch MCP Inspector for debugging
 ```
 
@@ -24,12 +27,16 @@ npm run inspector      # Launch MCP Inspector for debugging
 npm run test           # Run auth + manual tests
 npm run test:auth      # Test authentication utilities
 npm run test:manual    # Test direct API integration
-npm run test:trading   # Test MCP client integration
+npm run typecheck      # TypeScript type checking
+npm run lint           # Run linting (uses TypeScript compilation)
+npm run verify         # Build and run auth tests (quick verification)
+npm run ci             # Full CI pipeline (clean, build, test)
 ```
 
 ### Package Management
 ```bash
 npm install           # Install dependencies
+npm run clean         # Remove dist/ directory
 npm run prepublishOnly # Build before publishing (auto-triggered)
 ```
 
@@ -81,7 +88,7 @@ Defines Binance-specific enums and interfaces:
 
 Add this MCP server to Claude Code with one command:
 ```bash
-claude mcp add binance --scope user --command npx --args "-y,@snjyor/binance-mcp@latest"
+claude mcp add binance --scope user --command npx --args "-y,@luxiaolei/binance-mcp@latest"
 ```
 
 For trading features, configure API keys:
@@ -144,3 +151,33 @@ export BINANCE_SECRET_KEY="testnet-secret-key"
 - **MCP integration tests** (`test:trading`) - Full MCP client workflow
 
 Use `npm run inspector` to interact with tools via MCP Inspector GUI for manual testing.
+
+## CI/CD Integration
+
+### GitHub Actions Workflows
+The project includes comprehensive CI/CD workflows:
+
+- **CI Pipeline** (`ci.yml`) - Runs on Node.js 18.x, 20.x, 22.x
+  - TypeScript compilation and type checking
+  - Authentication tests without credentials
+  - Security audit and sensitive file detection
+  - Docker build validation
+  - Package installation testing
+- **Release Pipeline** - Automated publishing to npm
+- **Dependency Updates** - Automated dependency maintenance
+
+### Docker Support
+The project includes a multi-stage Dockerfile for containerized deployment:
+```bash
+docker build -t binance-mcp .          # Build container
+docker run -e BINANCE_API_KEY=... binance-mcp  # Run with env vars
+```
+
+### Package Testing
+Test package installation and npx execution:
+```bash
+# Test local installation
+npm install /path/to/project
+# Test npx command
+npx @luxiaolei/binance-mcp@latest
+```
